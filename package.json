@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "htm": "^3.0.3",
+    "preact": "^10.3.1",
+    "tailwind": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-transform-react-jsx": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-typescript": "^7.8.3",
+    "concurrently": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-postcss": "^8.0.0",
+    "snowpack": "^1.2.0",
+    "tailwindcss": "^1.2.0"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "name": "show-and-tell",
+  "scripts": {
+    "dev": "concurrently \"yarn babel src/ --out-dir lib/ --watch\" \"yarn gulp\" \"npx servor --reload\"",
+    "prepare": "snowpack",
+    "build:styles": "tailwindcss build index.css -o index_.css"
+  },
+  "version": "1.0.0"
+}

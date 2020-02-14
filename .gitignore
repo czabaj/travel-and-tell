@@ -1,0 +1,5 @@
+/lib/
+/node_modules/
+/web_modules/
+
+*error.log
