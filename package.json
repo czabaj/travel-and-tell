@@ -5,6 +5,7 @@
     "tailwind": "^4.0.0"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^2.0.6",
     "concurrently": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-postcss": "^8.0.0",
@@ -19,11 +20,11 @@
     "url": "https://github.com/vaclavnovotny/travel-and-tell.git"
   },
   "scripts": {
-    "dev": "concurrently \"gulp\" \"npx servor --reload\"",
+    "build": "NODE_ENV=production snowpack --dest wwwroot/web_modules --optimize && gulp css",
+    "dev": "concurrently \"gulp\" \"npx servor --reload wwwroot\"",
     "open-chrome": "google-chrome --remote-debugging-port=9222",
-    "prepare": "snowpack",
-    "prettier": "prettier \"**/*.+(js|jsx|yml|yaml|css|less|scss|ts|tsx|md|graphql|mdx)\"",
-    "build:styles": "tailwindcss build src/index.css -o index.css"
+    "prepare": "snowpack --dest wwwroot/web_modules",
+    "prettier": "prettier \"**/*.+(js|jsx|yml|yaml|css|less|scss|ts|tsx|md|graphql|mdx)\""
   },
   "version": "1.0.0"
 }

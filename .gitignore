@@ -1,5 +1,11 @@
-/lib/
+# automatically generated files
 /node_modules/
-/web_modules/
+/wwwroot/web_modules/
+/wwwroot/index.css
 
+# log files
 *error.log
+
+# deployment details
+.serverless
+.env
