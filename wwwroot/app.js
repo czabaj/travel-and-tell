@@ -1,11 +1,14 @@
 import { render } from "/web_modules/preact.js"
 
-import { html } from "/src/h.js"
+import { html } from "/utils/h.js"
+import Button from "/components/Button.js"
 
 // Create your main app component
 function SomePreactComponent() {
   return html`
-    <h1 className="text-red-500">Hello, World!</h1>
+    <h1 className="text-4xl font-bold text-center text-blue-500">
+      Hello, World!
+    </h1>
   `
 }
 
@@ -13,6 +16,7 @@ function SomePreactComponent() {
 render(
   html`
     <${SomePreactComponent} />
+    <${Button} to="#">Button example<//>
   `,
   document.getElementById("app"),
 )
