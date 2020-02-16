@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    // Process & infer types from .js files.
+    "allowJs": true,
+    "baseUrl": "./wwwroot",
+    "paths": {
+      "/*": ["*"]
+    }
+  },
+  "exclude": ["node_modules", "web_modules"]
+}
