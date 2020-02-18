@@ -1,9 +1,10 @@
 import { cn } from "/utils/css.js"
 import { html } from "/utils/h.js"
 
-export default ({ to, ...other }) => {
+export default ({ to, gray, indigo, ...other }) => {
   const className = cn(
-    `inline-block px-5 py-3 rounded-lg shadow-lg bg-indigo-500 text-sm uppercase tracking-wider`,
+    `btn`,
+    { "btn-gray": gray, "btn-indigo": indigo },
     other.className,
   )
 
