@@ -1,7 +1,7 @@
 import { cn } from "/utils/css.js"
 import { html } from "/utils/h.js"
 
-export default ({ to, gray, indigo, ...other }) => {
+function Button({ to, gray, indigo, ...other }) {
   const className = cn(
     `btn`,
     { "btn-gray": gray, "btn-indigo": indigo },
@@ -16,3 +16,5 @@ export default ({ to, gray, indigo, ...other }) => {
         <button ...${other} className=${className} />
       `
 }
+
+export default Button

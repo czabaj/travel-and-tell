@@ -3,9 +3,24 @@
 <html lang="en">
   <title>Travel and tell</title>
   <link href="/index.css" rel="stylesheet" type="text/css" />
+  <link
+    crossorigin=""
+    href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    rel="stylesheet"
+  />
 
   <body class="bg-gray-100">
     <div id="app"></div>
+    <!-- external libraries-->
+    <script
+      crossorigin=""
+      integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+      src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    ></script>
+    <script src="https://unpkg.com/localforage@1.7.3/dist/localforage.js"></script>
+    <script src="https://unpkg.com/blueimp-load-image@2.26.0/js/load-image.all.min.js"></script>
+    <!-- application entry point -->
     <script src="/app.js" type="module"></script>
   </body>
 </html>

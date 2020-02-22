@@ -1,6 +1,6 @@
 import { html } from "/utils/h.js"
 
-export default ({ sidebar, children }) => {
+function Layout({ children, sidebar }) {
   return html`
     <div class="min-h-screen md:flex bg-gray-100">
       <div class="flex-none w-full md:max-w-xs bg-purple text-white">
@@ -12,3 +12,5 @@ export default ({ sidebar, children }) => {
     </div>
   `
 }
+
+export default Layout

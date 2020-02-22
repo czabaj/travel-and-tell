@@ -3,9 +3,12 @@
     // Process & infer types from .js files.
     "allowJs": true,
     "baseUrl": "./wwwroot",
+    "noEmit": true,
     "paths": {
       "/*": ["*"]
-    }
+    },
+    "strict": true
   },
-  "exclude": ["node_modules", "web_modules"]
+  "exclude": ["node_modules", "web_modules"],
+  "include": ["wwwroot/**/*"]
 }
