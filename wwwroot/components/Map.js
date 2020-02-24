@@ -1,13 +1,41 @@
-import { connect, html, useEffect } from "/utils/h.js"
+import { createPortal } from "/web_modules/preact/compat.js"
+import * as R from "/web_modules/ramda.js"
+import {
+  Fragment,
+  connect,
+  html,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "/utils/h.js"
 
 const accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
-function Map({ files, to, gray, indigo, ...other }) {
-  console.log("files", files)
+function Marker({ file: { image, gps, filename }, map }) {
+  const popup = useMemo(() => {
+    const marker = L.marker(gps).addTo(map)
+    const content = document.createElement("div")
+    const popup = marker.bindPopup(content)
+    return content
+  })
 
-  useEffect(() => {
-    const mymap = L.map("mapid").setView([51.505, -0.09], 13)
+  return createPortal(
+    html`
+      <${Fragment}>
+        <b>${filename}</b>
+        <div dangerouslySetInnerHTML=${{ __html: image }} />
+      <//>
+    `,
+    popup,
+  )
+}
 
+function Map({ files }) {
+  const mymap = useRef()
+
+  const initMap = useCallback(node => {
+    mymap.current = L.map(node)
     L.tileLayer(
       `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`,
       {
@@ -19,35 +47,24 @@ function Map({ files, to, gray, indigo, ...other }) {
         zoomOffset: -1,
         accessToken,
       },
-    ).addTo(mymap)
+    ).addTo(mymap.current)
 
-    const marker = L.marker([51.5, -0.09]).addTo(mymap)
-
-    var circle = L.circle([51.508, -0.11], {
-      color: "red",
-      fillColor: "#f03",
-      fillOpacity: 0.5,
-      radius: 500,
-    }).addTo(mymap)
-
-    var polygon = L.polygon([
-      [51.509, -0.08],
-      [51.503, -0.06],
-      [51.51, -0.047],
-    ]).addTo(mymap)
-
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup()
-    circle.bindPopup("I am a circle.")
-    polygon.bindPopup("I am a polygon.")
-
-    var popup = L.popup()
-      .setLatLng([51.5, -0.09])
-      .setContent("I am a standalone popup.")
-      .openOn(mymap)
+    mymap.current.setView([0, 0], 3)
   }, [])
 
+  useEffect(() => {
+    if (!R.isEmpty(files)) mymap.current.setView(R.head(files).gps, 13)
+  }, [files])
+
   return html`
-    <div className="min-h-screen" id="mapid" />
+    <div className="min-h-screen" ref=${initMap}>
+      ${files.map(
+        file =>
+          html`
+            <${Marker} file=${file} map=${mymap.current} />
+          `,
+      )}
+    </div>
   `
 }
 

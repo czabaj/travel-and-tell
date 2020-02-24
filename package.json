@@ -1,12 +1,11 @@
 {
   "dependencies": {
     "csz": "^1.2.0",
+    "dayjs": "^1.8.20",
     "htm": "^3.0.3",
-    "most": "^1.8.0",
     "preact": "^10.3.1",
     "ramda": "^0.27.0",
     "ramda-adjunct": "^2.25.0",
-    "refract-preact-most": "^4.2.2",
     "reselect": "^4.0.0",
     "unistore": "^3.5.1"
   },
@@ -35,14 +34,16 @@
   "snowpack": {
     "webDependencies": [
       "csz",
+      "dayjs",
+      "dayjs/esm/plugin/customParseFormat/index.js",
+      "dayjs/esm/plugin/localizedFormat/index.js",
       "htm",
-      "most",
       "preact",
+      "preact/compat",
       "preact/debug",
       "preact/hooks",
       "ramda",
       "ramda-adjunct",
-      "refract-preact-most",
       "reselect",
       "unistore/full/preact.es.js"
     ]

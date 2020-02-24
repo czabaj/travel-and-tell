@@ -1,3 +1,5 @@
+import dayjs from "/web_modules/dayjs.js"
+
 /**
  * Converts File object containing image into DataURL string.
  * Coppied from https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/
@@ -12,20 +14,37 @@ export function imageToDataUrl(file) {
         if (result.type === "error") {
           reject(result)
         } else {
-          const dataURL = result.toDataURL(file.type)
           const exifData = exif.getAll()
           resolve({
-            dataURL,
+            image: result,
+            datetime: dayjs(
+              exifData.DateTimeOriginal,
+              "YYYY:MM:DD HH:mm:ss",
+            ).toISOString(),
             id: createIdFromExif(exifData),
             gps: getExifGPS(exifData),
             filename: file.name,
           })
         }
       },
-      { canvas: true, meta: true },
+      { meta: true },
     )
-    // loadingImg.onerror = reject
+    loadingImg.onerror = reject
   })
+}
+
+export function imgToCanvas(img) {
+  const imgCanvas = document.createElement("canvas")
+  const imgContext = imgCanvas.getContext("2d")
+
+  // Make sure canvas is as big as the picture
+  imgCanvas.width = img.width
+  imgCanvas.height = img.height
+
+  // Draw image into canvas element
+  imgContext.drawImage(img, 0, 0, img.width, img.height)
+
+  return imgCanvas
 }
 
 /**
