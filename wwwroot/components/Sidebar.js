@@ -1,27 +1,44 @@
 import dayjs from "/web_modules/dayjs.js"
-import * as R from "/web_modules/ramda.js"
+import { createStructuredSelector } from "/web_modules/reselect.js"
 
 import Button from "/components/Button.js"
 import FileInput from "/components/FileInput.js"
 import { connect, html } from "/utils/h.js"
-import { imageToDataUrl } from "/utils/file.js"
+import { fileToStoredPhoto } from "/utils/file.js"
+import { persistPhoto } from "/utils/storage.js"
+import {
+  appendPhotos,
+  photosSelector,
+  setStorageLoading,
+  storageLoadingSelector,
+} from "/utils/store.js"
 
-const withSidebar = connect("files", {
-  addFile: async (state, newFiles) => {
-    const images = await Promise.all(newFiles.map(imageToDataUrl))
-    const newState = R.over(
-      R.lensProp("files"),
-      R.unionWith(R.eqBy(R.prop("id")), images),
-      state,
-    )
-    return newState
-  },
-})
+const withSidebar = connect(
+  createStructuredSelector({
+    photos: photosSelector,
+    storageLoading: storageLoadingSelector,
+  }),
+  store => ({
+    addPhoto: async (_, newFiles) => {
+      // indicate store storage is loading
+      store.setState(setStorageLoading(true))
+      // transform File[] into StoredPhoto[]
+      const storedPhotos = await Promise.all(newFiles.map(fileToStoredPhoto))
+      // merge StoredPhoto[] `photos` in unistore
+      store.setState(appendPhotos(storedPhotos))
+      // persist all StoredPhoto in storage
+      Promise.all(storedPhotos.map(persistPhoto)).finally(() =>
+        // finally unset indicator
+        store.setState(setStorageLoading(false)),
+      )
+    },
+  }),
+)
 
-function Sidebar({ addFile, files }) {
+function Sidebar({ addPhoto, photos }) {
   return html`
     <div className="bg-indigo-300 min-h-screen px-4 py-2">
-      <${FileInput} droppable multiple onChange=${addFile} values=${files}>
+      <${FileInput} droppable multiple onChange=${addPhoto} values=${photos}>
         ${({ draggedOver, openFileDialog }) =>
           html`
             <div>
@@ -30,11 +47,11 @@ function Sidebar({ addFile, files }) {
               <//>
             </div>
             <div>
-              ${files.map(
-                file =>
+              ${photos.map(
+                photo =>
                   html`
                     <div>
-                      ${file.filename} ${dayjs(file.datetime).format("L")}
+                      ${photo.filename} ${dayjs(photo.datetime).format("L")}
                     </div>
                   `,
               )}

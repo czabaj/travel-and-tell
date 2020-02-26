@@ -1,10 +1,11 @@
-import { createPortal } from "/web_modules/preact/compat.js"
+import { createContext, createPortal } from "/web_modules/preact/compat.js"
 import * as R from "/web_modules/ramda.js"
 import {
   Fragment,
   connect,
   html,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -12,7 +13,10 @@ import {
 
 const accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
-function Marker({ file: { image, gps, filename }, map }) {
+const mapContext = createContext(null)
+
+function Marker({ file: { image, gps, filename } }) {
+  const map = useContext(mapContext)
   const popup = useMemo(() => {
     const marker = L.marker(gps).addTo(map)
     const content = document.createElement("div")
@@ -24,7 +28,6 @@ function Marker({ file: { image, gps, filename }, map }) {
     html`
       <${Fragment}>
         <b>${filename}</b>
-        <div dangerouslySetInnerHTML=${{ __html: image }} />
       <//>
     `,
     popup,
@@ -32,10 +35,10 @@ function Marker({ file: { image, gps, filename }, map }) {
 }
 
 function Map({ files }) {
-  const mymap = useRef()
+  const mapRef = useRef()
 
   const initMap = useCallback(node => {
-    mymap.current = L.map(node)
+    const map = (mapRef.current = L.map(node))
     L.tileLayer(
       `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`,
       {
@@ -47,24 +50,26 @@ function Map({ files }) {
         zoomOffset: -1,
         accessToken,
       },
-    ).addTo(mymap.current)
+    ).addTo(map)
 
-    mymap.current.setView([0, 0], 3)
+    map.setView([0, 0], 3)
   }, [])
 
   useEffect(() => {
-    if (!R.isEmpty(files)) mymap.current.setView(R.head(files).gps, 13)
+    if (!R.isEmpty(files)) mapRef.current.setView(R.head(files).gps, 13)
   }, [files])
 
   return html`
-    <div className="min-h-screen" ref=${initMap}>
-      ${files.map(
-        file =>
-          html`
-            <${Marker} file=${file} map=${mymap.current} />
-          `,
-      )}
-    </div>
+    <${mapContext.Provider} value=${mapRef.current}>
+      <div className="min-h-screen" ref=${initMap}>
+        ${files.map(
+          file =>
+            html`
+              <${Marker} file=${file} />
+            `,
+        )}
+      </div>
+    <//>
   `
 }
 

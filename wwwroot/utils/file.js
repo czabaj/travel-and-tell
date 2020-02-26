@@ -1,33 +1,41 @@
 import dayjs from "/web_modules/dayjs.js"
 
+// loadImage
+// @see https://www.npmjs.com/package/blueimp-load-image#options
+
 /**
- * Converts File object containing image into DataURL string.
- * Coppied from https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/
+ * Converts File object containing image into Storage object.
  * @param {File} file
- * @returns Promise<{ exif: object, dataURL: string }>
+ * @returns Promise<StoredImage>
  */
-export function imageToDataUrl(file) {
+export function fileToStoredPhoto(file) {
   return new Promise((resolve, reject) => {
     const loadingImg = loadImage(
       file,
-      function(result, { exif }) {
+      (result, meta) => {
         if (result.type === "error") {
           reject(result)
         } else {
-          const exifData = exif.getAll()
-          resolve({
-            image: result,
-            datetime: dayjs(
-              exifData.DateTimeOriginal,
+          result.toBlob(blob => {
+            const filename = file.name
+            const exif = meta.exif.getAll()
+            const datetime = dayjs(
+              exif.DateTimeOriginal,
               "YYYY:MM:DD HH:mm:ss",
-            ).toISOString(),
-            id: createIdFromExif(exifData),
-            gps: getExifGPS(exifData),
-            filename: file.name,
+            ).toISOString()
+            const gps = getExifGPS(exif)
+
+            resolve({
+              blob,
+              datetime,
+              filename,
+              gps,
+              id: `${filename}_${datetime}_${gps}`,
+            })
           })
         }
       },
-      { meta: true },
+      { canvas: true, maxWidth: 600, meta: true },
     )
     loadingImg.onerror = reject
   })
@@ -47,13 +55,16 @@ export function imgToCanvas(img) {
   return imgCanvas
 }
 
+const urlCreator = window.URL || window.webkitURL
+const blobToDataUrl = blob => urlCreator.createObjectURL(blob)
+
 /**
  * Given dataUrl returns Image object
  * @param {string} dataUrl
  * @returns Image
  */
 export function dataUrlToImage(dataUrl) {
-  const imgUrl = URL.createObjectURL(dataUrl)
+  const imgUrl = urlCreator.createObjectURL(dataUrl)
   const img = new Image()
   img.src = imgUrl
   URL.revokeObjectURL(imgURL)
@@ -66,16 +77,21 @@ function getExifGPS({
   GPSLongitude,
   GPSLongitudeRef,
 }) {
-  return [
-    { coordinate: GPSLatitude, hemisphere: GPSLatitudeRef },
-    { coordinate: GPSLongitude, hemisphere: GPSLongitudeRef },
-  ].map(({ coordinate, hemisphere }) => {
-    const [degrees, minutes, seconds] = coordinate.split(",", 3).map(parseFloat)
-    const sign = hemisphere == "W" || hemisphere == "S" ? -1 : 1
-    return sign * (degrees + minutes / 60 + seconds / 3600)
-  })
+  return GPSLatitude && GPSLatitudeRef && GPSLongitude && GPSLongitudeRef
+    ? [
+        { coordinate: GPSLatitude, hemisphere: GPSLatitudeRef },
+        { coordinate: GPSLongitude, hemisphere: GPSLongitudeRef },
+      ].map(({ coordinate, hemisphere }) => {
+        const [degrees, minutes, seconds] = coordinate
+          .split(",", 3)
+          .map(parseFloat)
+        const sign = hemisphere == "W" || hemisphere == "S" ? -1 : 1
+        return sign * (degrees + minutes / 60 + seconds / 3600)
+      })
+    : undefined
 }
 
-function createIdFromExif({ DateTimeOriginal, GPSImgDirection, GPSLongitude }) {
-  return [DateTimeOriginal, GPSImgDirection, GPSLongitude].join("")
-}
+/**
+ * @typedef StoredImage
+ * @type { blob: Blob, datetime: string, filename: string, gps: [number, number], id: string }
+ */
