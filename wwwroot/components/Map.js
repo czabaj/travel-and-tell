@@ -1,8 +1,10 @@
 import { createContext, createPortal } from "/web_modules/preact/compat.js"
 import * as R from "/web_modules/ramda.js"
+import Image from "/components/Image.js"
 import {
   Fragment,
   connect,
+  createStructuredSelector,
   html,
   useCallback,
   useContext,
@@ -10,6 +12,7 @@ import {
   useMemo,
   useRef,
 } from "/utils/h.js"
+import { photosSelector } from "/utils/store.js"
 
 const accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
@@ -34,7 +37,9 @@ function Marker({ file: { image, gps, filename } }) {
   )
 }
 
-function Map({ files }) {
+const withMap = connect(createStructuredSelector({ photos: photosSelector }))
+
+function Map({ photos }) {
   const mapRef = useRef()
 
   const initMap = useCallback(node => {
@@ -56,16 +61,16 @@ function Map({ files }) {
   }, [])
 
   useEffect(() => {
-    if (!R.isEmpty(files)) mapRef.current.setView(R.head(files).gps, 13)
+    if (!R.isEmpty(photos)) mapRef.current.setView(R.head(photos).gps, 13)
   }, [files])
 
   return html`
     <${mapContext.Provider} value=${mapRef.current}>
       <div className="min-h-screen" ref=${initMap}>
-        ${files.map(
-          file =>
+        ${photos.map(
+          photo =>
             html`
-              <${Marker} file=${file} />
+              <${Marker} file=${photo} />
             `,
         )}
       </div>
@@ -73,4 +78,14 @@ function Map({ files }) {
   `
 }
 
-export default connect("files")(Map)
+function TestMap({ photos }) {
+  const file = photos && photos[0]
+  return (
+    file &&
+    html`
+      <${Image} blob=${file.blob} />
+    `
+  )
+}
+
+export default withMap(TestMap)

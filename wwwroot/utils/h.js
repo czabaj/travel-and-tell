@@ -14,6 +14,11 @@ import { connect } from "/web_modules/unistore/full/preact.es.js"
 // https://refract.js.org/usage/connecting-to-react
 
 export * from "/web_modules/preact/hooks.js"
+export { forwardRef, memo } from "/web_modules/preact/compat.js"
+export {
+  createSelector,
+  createStructuredSelector,
+} from "/web_modules/reselect.js"
 
 dayjs.extend(customParseFormat)
 dayjs.extend(localizedFormat)

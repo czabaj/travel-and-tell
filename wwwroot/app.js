@@ -11,6 +11,7 @@ import Button from "/components/Button.js"
 import Content from "/components/Content.js"
 import Layout from "/components/Layout.js"
 import Map from "/components/Map.js"
+import Panel from "/components/Panel.js"
 import Sidebar from "/components/Sidebar.js"
 import { html } from "/utils/h.js"
 import { getStoredPhotos } from "/utils/storage.js"
@@ -33,11 +34,14 @@ function App() {
   return html`
     <${Provider} store=${store}>
       <${Layout}
+        panel=${html`
+          <${Panel} />
+        `}
         sidebar=${html`
           <${Sidebar} />
         `}
       >
-        <!-- <${Map} /> -->
+        <${Map} />
       <//>
     <//>
   `

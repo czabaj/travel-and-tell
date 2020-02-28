@@ -40,10 +40,10 @@ export const getStoredPhotos = () =>
  * @param {StoredPhoto} storedPhoto
  * @returns {Promise<void>}
  */
-export const removePhoto = ({ id }) =>
+export const removeStoredPhoto = ({ id }) =>
   config.then(() => localforage.removeItem(id))
 
 /**
  * @returns {Promise<void>}
  */
-export const clear = () => config.then(() => localforage.clear())
+export const clearPhotosStorage = () => config.then(() => localforage.clear())

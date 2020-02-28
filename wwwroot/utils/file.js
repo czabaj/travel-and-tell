@@ -1,8 +1,5 @@
 import dayjs from "/web_modules/dayjs.js"
 
-// loadImage
-// @see https://www.npmjs.com/package/blueimp-load-image#options
-
 /**
  * Converts File object containing image into Storage object.
  * @param {File} file
@@ -41,22 +38,19 @@ export function fileToStoredPhoto(file) {
   })
 }
 
-export function imgToCanvas(img) {
-  const imgCanvas = document.createElement("canvas")
-  const imgContext = imgCanvas.getContext("2d")
+// export function imgToCanvas(img) {
+//   const imgCanvas = document.createElement("canvas")
+//   const imgContext = imgCanvas.getContext("2d")
 
-  // Make sure canvas is as big as the picture
-  imgCanvas.width = img.width
-  imgCanvas.height = img.height
+//   // Make sure canvas is as big as the picture
+//   imgCanvas.width = img.width
+//   imgCanvas.height = img.height
 
-  // Draw image into canvas element
-  imgContext.drawImage(img, 0, 0, img.width, img.height)
+//   // Draw image into canvas element
+//   imgContext.drawImage(img, 0, 0, img.width, img.height)
 
-  return imgCanvas
-}
-
-const urlCreator = window.URL || window.webkitURL
-const blobToDataUrl = blob => urlCreator.createObjectURL(blob)
+//   return imgCanvas
+// }
 
 /**
  * Given dataUrl returns Image object

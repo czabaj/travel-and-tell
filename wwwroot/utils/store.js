@@ -33,3 +33,4 @@ export const appendPhotos = R.curry((newPhotos, state) =>
 export const setStorageLoading = R.curry((loadingState, state) =>
   R.set(storageLoading, Boolean(loadingState), state),
 )
+export const clearPhotos = R.set(photos, [])

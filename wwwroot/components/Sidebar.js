@@ -1,14 +1,15 @@
 import dayjs from "/web_modules/dayjs.js"
-import { createStructuredSelector } from "/web_modules/reselect.js"
 
 import Button from "/components/Button.js"
 import FileInput from "/components/FileInput.js"
-import { connect, html } from "/utils/h.js"
+import { connect, createStructuredSelector, html } from "/utils/h.js"
 import { fileToStoredPhoto } from "/utils/file.js"
-import { persistPhoto } from "/utils/storage.js"
+import { clearPhotosStorage, persistPhoto } from "/utils/storage.js"
 import {
   appendPhotos,
+  clearPhotos,
   photosSelector,
+  pipe,
   setStorageLoading,
   storageLoadingSelector,
 } from "/utils/store.js"
@@ -32,21 +33,21 @@ const withSidebar = connect(
         store.setState(setStorageLoading(false)),
       )
     },
+    clearPhotos: async () => {
+      store.setState(setStorageLoading(true))
+      await clearPhotosStorage()
+      store.setState(pipe(clearPhotos, setStorageLoading(false)))
+    },
   }),
 )
 
-function Sidebar({ addPhoto, photos }) {
+function Sidebar({ addPhoto, clearPhotos, photos }) {
   return html`
-    <div className="bg-indigo-300 min-h-screen px-4 py-2">
-      <${FileInput} droppable multiple onChange=${addPhoto} values=${photos}>
-        ${({ draggedOver, openFileDialog }) =>
-          html`
-            <div>
-              <${Button} indigo onClick=${openFileDialog}>
-                Load images
-              <//>
-            </div>
-            <div>
+    <${FileInput} droppable multiple onChange=${addPhoto} values=${photos}>
+      ${({ draggedOver, openFileDialog }) =>
+        html`
+          <div className="bg-indigo-300 flex flex-col min-h-screen px-4 py-2">
+            <div className="flex-1">
               ${photos.map(
                 photo =>
                   html`
@@ -56,9 +57,17 @@ function Sidebar({ addPhoto, photos }) {
                   `,
               )}
             </div>
-          `}
-      <//>
-    </div>
+            <div>
+              <${Button} indigo onClick=${openFileDialog}>
+                Add images
+              <//>
+              <${Button} indigo onClick=${clearPhotos}>
+                Clear
+              <//>
+            </div>
+          </div>
+        `}
+    <//>
   `
 }
 
