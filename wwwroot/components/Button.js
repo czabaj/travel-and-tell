@@ -1,10 +1,10 @@
 import { cn } from "/utils/css.js"
 import { html } from "/utils/h.js"
 
-function Button({ to, gray, indigo, ...other }) {
+function Button({ disabled, to, ...other }) {
   const className = cn(
     `btn`,
-    { "btn-gray": gray, "btn-indigo": indigo },
+    disabled ? "btn-gray" : "btn-indigo",
     other.className,
   )
 
