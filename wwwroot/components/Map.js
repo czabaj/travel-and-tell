@@ -1,45 +1,21 @@
-import { createContext, createPortal } from "/web_modules/preact/compat.js"
 import * as R from "/web_modules/ramda.js"
-import Image from "/components/Image.js"
 import {
-  Fragment,
   connect,
   createStructuredSelector,
   html,
   useCallback,
-  useContext,
   useEffect,
-  useMemo,
   useRef,
 } from "/utils/h.js"
-import { photosSelector } from "/utils/store.js"
+import { accessToken, mapContext } from "/utils/map.js"
+import { photosSelector, setFocusedPhoto } from "/utils/store.js"
+import MapMarker from "./MapMarker.js"
 
-const accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
+const withMap = connect(createStructuredSelector({ photos: photosSelector }), {
+  clearFocusedPhoto: setFocusedPhoto(null),
+})
 
-const mapContext = createContext(null)
-
-function Marker({ file: { image, gps, filename } }) {
-  const map = useContext(mapContext)
-  const popup = useMemo(() => {
-    const marker = L.marker(gps).addTo(map)
-    const content = document.createElement("div")
-    const popup = marker.bindPopup(content)
-    return content
-  })
-
-  return createPortal(
-    html`
-      <${Fragment}>
-        <b>${filename}</b>
-      <//>
-    `,
-    popup,
-  )
-}
-
-const withMap = connect(createStructuredSelector({ photos: photosSelector }))
-
-function Map({ photos }) {
+function Map({ clearFocusedPhoto, photos }) {
   const mapRef = useRef()
 
   const initMap = useCallback(node => {
@@ -58,11 +34,13 @@ function Map({ photos }) {
     ).addTo(map)
 
     map.setView([0, 0], 3)
+
+    map.on("popupclose", clearFocusedPhoto)
   }, [])
 
   useEffect(() => {
     if (!R.isEmpty(photos)) mapRef.current.setView(R.head(photos).gps, 13)
-  }, [files])
+  }, [photos])
 
   return html`
     <${mapContext.Provider} value=${mapRef.current}>
@@ -70,7 +48,7 @@ function Map({ photos }) {
         ${photos.map(
           photo =>
             html`
-              <${Marker} file=${photo} />
+              <${MapMarker} key=${photo.id} photo=${photo} />
             `,
         )}
       </div>
@@ -78,14 +56,4 @@ function Map({ photos }) {
   `
 }
 
-function TestMap({ photos }) {
-  const file = photos && photos[0]
-  return (
-    file &&
-    html`
-      <${Image} blob=${file.blob} />
-    `
-  )
-}
-
-export default withMap(TestMap)
+export default withMap(Map)

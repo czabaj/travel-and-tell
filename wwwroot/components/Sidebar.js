@@ -15,15 +15,16 @@ import { clearPhotosStorage, persistPhoto } from "/utils/storage.js"
 import {
   appendPhotos,
   clearPhotos,
-  photosSelector,
+  photosByDateSelector,
   pipe,
+  setFocusedPhoto,
   setStorageLoading,
   storageLoadingSelector,
 } from "/utils/store.js"
 
 const withSidebar = connect(
   createStructuredSelector({
-    photos: photosSelector,
+    photos: photosByDateSelector,
     storageLoading: storageLoadingSelector,
   }),
   store => ({
@@ -45,6 +46,14 @@ const withSidebar = connect(
       await clearPhotosStorage()
       store.setState(pipe(clearPhotos, setStorageLoading(false)))
     },
+    focusPhoto: (
+      state,
+      {
+        target: {
+          dataset: { id },
+        },
+      },
+    ) => setFocusedPhoto(id, state),
   }),
 )
 
@@ -52,7 +61,9 @@ function selectionReduced(selection, event) {
   switch (event.type) {
     case "change": {
       const {
-        target: { id },
+        target: {
+          dataset: { id },
+        },
       } = event
       const { [id]: selected, ...other } = selection
       return selected ? other : { ...other, [id]: true }
@@ -66,7 +77,7 @@ function selectionReduced(selection, event) {
   }
 }
 
-function Sidebar({ addPhoto, clearPhotos, photos }) {
+function Sidebar({ addPhoto, clearPhotos, focusPhoto, photos }) {
   const [selection, dispatchSelect] = useReducer(selectionReduced, {})
   const allSelected =
     !isEmpty(photos) && photos.every(({ id }) => selection[id])
@@ -107,15 +118,21 @@ function Sidebar({ addPhoto, clearPhotos, photos }) {
               ${photos.map(
                 ({ datetime, filename, id }) =>
                   html`
-                    <div>
+                    <div className="flex">
                       <input
-                        id=${id}
+                        data-id=${id}
                         name=${`photos_${id}`}
                         onChange=${dispatchSelect}
                         type="checkbox"
                         checked=${Boolean(selection[id])}
                       />
-                      ${filename} ${dayjs(datetime).format("L")}
+                      <div
+                        className="flex-1 hover:cursor-pointer"
+                        data-id=${id}
+                        onClick=${focusPhoto}
+                      >
+                        ${filename} ${dayjs(datetime).format("L")}
+                      </div>
                     </div>
                   `,
               )}
