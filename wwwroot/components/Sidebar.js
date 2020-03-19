@@ -17,7 +17,7 @@ import {
   clearPhotos,
   photosByDateSelector,
   pipe,
-  setFocusedPhoto,
+  setFocusedPhotoId,
   setStorageLoading,
   storageLoadingSelector,
 } from "/utils/store.js"
@@ -53,7 +53,7 @@ const withSidebar = connect(
           dataset: { id },
         },
       },
-    ) => setFocusedPhoto(id, state),
+    ) => setFocusedPhotoId(id, state),
   }),
 )
 

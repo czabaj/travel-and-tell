@@ -8,12 +8,15 @@ import {
   useRef,
 } from "/utils/h.js"
 import { accessToken, mapContext } from "/utils/map.js"
-import { photosSelector, setFocusedPhoto } from "/utils/store.js"
+import { photosByDateSelector, setFocusedPhotoId } from "/utils/store.js"
 import MapMarker from "./MapMarker.js"
 
-const withMap = connect(createStructuredSelector({ photos: photosSelector }), {
-  clearFocusedPhoto: setFocusedPhoto(null),
-})
+const withMap = connect(
+  createStructuredSelector({ photos: photosByDateSelector }),
+  {
+    clearFocusedPhoto: setFocusedPhotoId(null),
+  },
+)
 
 function Map({ clearFocusedPhoto, photos }) {
   const mapRef = useRef()
@@ -39,7 +42,13 @@ function Map({ clearFocusedPhoto, photos }) {
   }, [])
 
   useEffect(() => {
-    if (!R.isEmpty(photos)) mapRef.current.setView(R.head(photos).gps, 13)
+    if (!R.isEmpty(photos)) {
+      const map = mapRef.current
+      const polyline = L.polyline(photos.map(R.prop("gps")), {
+        color: "red",
+      }).addTo(map)
+      map.fitBounds(polyline.getBounds())
+    }
   }, [photos])
 
   return html`

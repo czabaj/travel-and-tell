@@ -1,4 +1,4 @@
-import { createPortal, useReducer } from "/web_modules/preact/compat.js"
+import { createPortal } from "/web_modules/preact/compat.js"
 
 import Image from "/components/Image.js"
 import {
@@ -12,15 +12,15 @@ import {
   useRef,
 } from "/utils/h.js"
 import { mapContext } from "/utils/map.js"
-import { focusedPhotoSelector } from "/utils/store.js"
+import { focusedPhotoIdSelector } from "/utils/store.js"
 
 const photoIdSelector = (_, { photo: { id } }) => id
 
 const withMarker = connect(
   createSelector(
-    focusedPhotoSelector,
+    focusedPhotoIdSelector,
     photoIdSelector,
-    (focusedPhoto, photoId) => ({ focused: focusedPhoto === photoId }),
+    (focusedPhotoId, photoId) => ({ focused: focusedPhotoId === photoId }),
   ),
 )
 
@@ -36,7 +36,9 @@ function Marker({ focused, photo: { blob, gps } }) {
     }
   }, [])
   useEffect(() => {
-    if (focused) popupRef.current.openPopup()
+    if (focused) {
+      popupRef.current.openPopup()
+    }
   }, [focused])
 
   return createPortal(

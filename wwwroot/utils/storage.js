@@ -33,7 +33,11 @@ export const persistPhoto = storedPhoto =>
 export const getStoredPhotos = () =>
   config.then(() => {
     const buffer = []
-    return localforage.iterate(data => buffer.push(data)).then(() => buffer)
+    return localforage
+      .iterate(data => {
+        buffer.push(data)
+      })
+      .then(() => buffer)
   })
 
 /**

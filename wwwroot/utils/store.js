@@ -22,11 +22,17 @@ export const enhanceStore = originalStore => ({
 // lenses
 const photos = R.lensProp("photos")
 const storageLoading = R.lensProp("storageLoading")
-const focusedPhoto = R.lensProp("focusedPhoto")
+const focusedPhotoId = R.lensProp("focusedPhoto")
 
 // selectors
-export const focusedPhotoSelector = R.view(focusedPhoto)
+export const focusedPhotoIdSelector = R.view(focusedPhotoId)
 export const photosSelector = R.view(photos)
+export const focusedPhotoSelector = createSelector(
+  focusedPhotoIdSelector,
+  photosSelector,
+  (focusedPhotoId, photos) =>
+    focusedPhotoId && photos.find(({ id }) => id === focusedPhotoId),
+)
 export const photosByDateSelector = createSelector(
   photosSelector,
   R.sortBy(R.prop("datetime")),
@@ -37,9 +43,20 @@ export const storageLoadingSelector = R.view(storageLoading)
 export const appendPhotos = R.curry((newPhotos, state) =>
   R.over(photos, R.unionWith(R.eqBy(R.prop("id")), newPhotos), state),
 )
-export const setFocusedPhoto = R.curry((photoId, state) =>
-  R.set(focusedPhoto, photoId || undefined, state),
+export const setFocusedPhotoId = R.curry((photoId, state) =>
+  R.set(focusedPhotoId, photoId || undefined, state),
 )
+export const setFocusedPhotoComment = R.curry((comment, state) => {
+  const focusedPhotoIndex = R.pipe(
+    R.juxt([focusedPhotoIdSelector, photosSelector]),
+    ([id, photos]) => R.findIndex(R.whereEq({ id }), photos),
+  )(state)
+  return R.over(
+    R.compose(R.photos, R.lensIndex(focusedPhotoIndex)),
+    R.set("comment", comment),
+    state,
+  )
+})
 export const setStorageLoading = R.curry((loadingState, state) =>
   R.set(storageLoading, Boolean(loadingState), state),
 )

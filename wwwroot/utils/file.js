@@ -10,7 +10,7 @@ export function fileToStoredPhoto(file) {
     const loadingImg = loadImage(
       file,
       (result, meta) => {
-        if (result.type === "error") {
+        if (result.type === `error`) {
           reject(result)
         } else {
           result.toBlob(blob => {
@@ -18,11 +18,12 @@ export function fileToStoredPhoto(file) {
             const exif = meta.exif.getAll()
             const datetime = dayjs(
               exif.DateTimeOriginal,
-              "YYYY:MM:DD HH:mm:ss",
+              `YYYY:MM:DD HH:mm:ss`,
             ).toISOString()
             const gps = getExifGPS(exif)
 
             resolve({
+              comment: ``,
               blob,
               datetime,
               filename,
@@ -38,33 +39,6 @@ export function fileToStoredPhoto(file) {
   })
 }
 
-// export function imgToCanvas(img) {
-//   const imgCanvas = document.createElement("canvas")
-//   const imgContext = imgCanvas.getContext("2d")
-
-//   // Make sure canvas is as big as the picture
-//   imgCanvas.width = img.width
-//   imgCanvas.height = img.height
-
-//   // Draw image into canvas element
-//   imgContext.drawImage(img, 0, 0, img.width, img.height)
-
-//   return imgCanvas
-// }
-
-/**
- * Given dataUrl returns Image object
- * @param {string} dataUrl
- * @returns Image
- */
-export function dataUrlToImage(dataUrl) {
-  const imgUrl = urlCreator.createObjectURL(dataUrl)
-  const img = new Image()
-  img.src = imgUrl
-  URL.revokeObjectURL(imgURL)
-  return img
-}
-
 function getExifGPS({
   GPSLatitude,
   GPSLatitudeRef,
@@ -77,9 +51,9 @@ function getExifGPS({
         { coordinate: GPSLongitude, hemisphere: GPSLongitudeRef },
       ].map(({ coordinate, hemisphere }) => {
         const [degrees, minutes, seconds] = coordinate
-          .split(",", 3)
+          .split(`,`, 3)
           .map(parseFloat)
-        const sign = hemisphere == "W" || hemisphere == "S" ? -1 : 1
+        const sign = hemisphere == `W` || hemisphere == `S` ? -1 : 1
         return sign * (degrees + minutes / 60 + seconds / 3600)
       })
     : undefined
@@ -87,5 +61,5 @@ function getExifGPS({
 
 /**
  * @typedef StoredImage
- * @type { blob: Blob, datetime: string, filename: string, gps: [number, number], id: string }
+ * @type { comment: string, blob: Blob, datetime: string, filename: string, gps: [number, number], id: string }
  */

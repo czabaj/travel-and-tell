@@ -18,21 +18,6 @@ const withPanel = connect(
     photos: photosSelector,
     storageLoading: storageLoadingSelector,
   }),
-  store => ({
-    addPhoto: async (_, newFiles) => {
-      // indicate store storage is loading
-      store.setState(setStorageLoading(true))
-      // transform File[] into StoredPhoto[]
-      const storedPhotos = await Promise.all(newFiles.map(fileToStoredPhoto))
-      // merge StoredPhoto[] `photos` in unistore
-      store.setState(appendPhotos(storedPhotos))
-      // persist all StoredPhoto in storage
-      Promise.all(storedPhotos.map(persistPhoto)).finally(() =>
-        // finally unset indicator
-        store.setState(setStorageLoading(false)),
-      )
-    },
-  }),
 )
 
 function Panel({ addPhoto, photos }) {
