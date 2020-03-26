@@ -28,18 +28,23 @@ function Marker({ focused, photo: { blob, gps } }) {
   const map = useContext(mapContext)
   const content = useMemo(() => document.createElement("div"), [])
   const popupRef = useRef()
+  const markerRef = useRef()
   useEffect(() => {
-    const marker = L.marker(gps).addTo(map)
-    popupRef.current = marker.bindPopup(content)
+    popupRef.current = new mapboxgl.Popup().setHTML(content)
+    markerRef.current = new mapboxgl.Marker()
+      .setLngLat(gps)
+      .setPopup(popupRef.current)
+      .addTo(map)
+    popupRef.current.on("open")
     return () => {
-      marker.remove()
+      markerRef.current.remove()
     }
-  }, [])
-  useEffect(() => {
-    if (focused) {
-      popupRef.current.openPopup()
-    }
-  }, [focused])
+  }, [gps])
+  // useEffect(() => {
+  //   if (focused !== popupRef.current.isOpen()) {
+  //     markerRef.current.togglePopup()
+  //   }
+  // }, [focused])
 
   return createPortal(
     html`

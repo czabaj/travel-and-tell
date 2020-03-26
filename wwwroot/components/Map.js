@@ -7,7 +7,7 @@ import {
   useEffect,
   useRef,
 } from "/utils/h.js"
-import { accessToken, mapContext } from "/utils/map.js"
+import { createMap, mapContext } from "/utils/map.js"
 import { photosByDateSelector, setFocusedPhotoId } from "/utils/store.js"
 import MapMarker from "./MapMarker.js"
 
@@ -22,38 +22,29 @@ function Map({ clearFocusedPhoto, photos }) {
   const mapRef = useRef()
 
   const initMap = useCallback(node => {
-    const map = (mapRef.current = L.map(node))
-    L.tileLayer(
-      `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`,
-      {
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: "mapbox/streets-v11",
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken,
-      },
-    ).addTo(map)
-
-    map.setView([0, 0], 3)
+    const map = createMap(node)
+    mapRef.current = map
 
     map.on("popupclose", clearFocusedPhoto)
+    map.on("load", () => {
+      // needed otherwise map canvas dont expand
+      window.dispatchEvent(new Event("resize"))
+    })
   }, [])
 
-  useEffect(() => {
-    if (!R.isEmpty(photos)) {
-      const map = mapRef.current
-      const polyline = L.polyline(photos.map(R.prop("gps")), {
-        color: "red",
-      }).addTo(map)
-      map.fitBounds(polyline.getBounds())
-    }
-  }, [photos])
+  // useEffect(() => {
+  //   if (!R.isEmpty(photos)) {
+  //     const map = mapRef.current
+  //     const polyline = L.polyline(photos.map(R.prop("gps")), {
+  //       color: "red",
+  //     }).addTo(map)
+  //     map.fitBounds(polyline.getBounds())
+  //   }
+  // }, [photos])
 
   return html`
     <${mapContext.Provider} value=${mapRef.current}>
-      <div className="min-h-screen" ref=${initMap}>
+      <div className="absolute inset-0" ref=${initMap}>
         ${photos.map(
           photo =>
             html`

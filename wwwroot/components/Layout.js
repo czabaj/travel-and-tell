@@ -8,7 +8,7 @@ function Layout({ children, panel, sidebar }) {
       </div>
       <div class="flex-1 bg-blue text-white">
         <div class="flex flex-col min-h-screen">
-          <div class="flex-1">${children}</div>
+          <div class="flex-1 relative">${children}</div>
           <div class="bg-blue-500">
             ${panel}
           </div>
