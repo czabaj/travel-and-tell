@@ -10,12 +10,13 @@ const config = localforage.config({
 
 /**
  *  Shape of StoredPhoto
- *  @version 1.0.0
+ *  @version 2.0.0
+ *  @see SchemaVer https://github.com/snowplow/iglu/wiki/SchemaVer
  *  @typedef {
  *    blob: Blob,
+ *    coordinates: [number, number],
  *    datetime: string,
  *    filename: string,
- *    gps: [number, number],
  *    id: string
  *  } StoredPhoto
  */

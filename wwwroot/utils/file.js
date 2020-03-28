@@ -3,7 +3,7 @@ import dayjs from "/web_modules/dayjs.js"
 /**
  * Converts File object containing image into Storage object.
  * @param {File} file
- * @returns Promise<StoredImage>
+ * @returns Promise<StoredPhoto>
  */
 export function fileToStoredPhoto(file) {
   return new Promise((resolve, reject) => {
@@ -20,15 +20,15 @@ export function fileToStoredPhoto(file) {
               exif.DateTimeOriginal,
               `YYYY:MM:DD HH:mm:ss`,
             ).toISOString()
-            const gps = getExifGPS(exif)
+            const coordinates = getCoordinatesFromExif(exif)
 
             resolve({
-              comment: ``,
               blob,
+              comment: ``,
+              coordinates,
               datetime,
               filename,
-              gps,
-              id: `${filename}_${datetime}_${gps}`,
+              id: `${filename}_${datetime}_${coordinates}`,
             })
           })
         }
@@ -39,7 +39,14 @@ export function fileToStoredPhoto(file) {
   })
 }
 
-function getExifGPS({
+/**
+ * Given exif data, outputs coordinates as tuple [longitude, latitude] which
+ * comply with GeoJSON Position
+ * @see GeoJSON position https://tools.ietf.org/html/rfc7946#section-3.1.1
+ * @param {object} exifData
+ * @returns {[number, number] | undefined}
+ */
+function getCoordinatesFromExif({
   GPSLatitude,
   GPSLatitudeRef,
   GPSLongitude,
@@ -47,8 +54,8 @@ function getExifGPS({
 }) {
   return GPSLatitude && GPSLatitudeRef && GPSLongitude && GPSLongitudeRef
     ? [
-        { coordinate: GPSLatitude, hemisphere: GPSLatitudeRef },
         { coordinate: GPSLongitude, hemisphere: GPSLongitudeRef },
+        { coordinate: GPSLatitude, hemisphere: GPSLatitudeRef },
       ].map(({ coordinate, hemisphere }) => {
         const [degrees, minutes, seconds] = coordinate
           .split(`,`, 3)
@@ -58,8 +65,3 @@ function getExifGPS({
       })
     : undefined
 }
-
-/**
- * @typedef StoredImage
- * @type { comment: string, blob: Blob, datetime: string, filename: string, gps: [number, number], id: string }
- */

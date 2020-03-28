@@ -8,6 +8,8 @@ extends:
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
+  loadImage: readonly
+  localforage: readonly
   mapboxgl: readonly
 ignorePatterns:
   - node_modules/

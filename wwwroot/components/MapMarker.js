@@ -31,7 +31,7 @@ function Marker({ map, focusedPhoto }) {
   useEffect(() => {
     if (focusedPhoto) {
       new mapboxgl.Popup()
-        .setLngLat(R.reverse(focusedPhoto.gps))
+        .setLngLat(focusedPhoto.coordinates)
         .setDOMContent(content)
         .addTo(map)
     }
