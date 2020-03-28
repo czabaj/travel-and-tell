@@ -2,10 +2,8 @@ import * as R from "/web_modules/ramda.js"
 import {
   connect,
   createSelector,
-  createStructuredSelector,
   html,
   useCallback,
-  useRef,
   useState,
   useEffect,
 } from "/utils/h.js"
@@ -42,19 +40,16 @@ function Map({
   photos,
   setFocusedPhotoIdAction,
 }) {
-  const mapRef = useRef()
-  const [mapLoaded, setMapLoaded] = useState(false)
+  const [map, setMap] = useState(null)
 
   const initMap = useCallback(node => {
-    const map = createMap(node)
-    mapRef.current = map
-
-    map.on("load", () => {
+    const mapInstance = createMap(node)
+    mapInstance.on("load", () => {
       // nust trigger resize otherwise map canvas don't expand
-      map.resize()
+      mapInstance.resize()
 
-      map.addSource(PHOTOS, { type: "geojson", data: geoJsonData })
-      map.addLayer({
+      mapInstance.addSource(PHOTOS, { type: "geojson", data: geoJsonData })
+      mapInstance.addLayer({
         id: PHOTOS,
         type: "symbol",
         source: PHOTOS,
@@ -64,7 +59,21 @@ function Map({
         },
       })
 
-      map.on("click", PHOTOS, e => {
+      setMap(mapInstance)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (map) {
+      map.on("popupclose", clearFocusedPhoto)
+      return () => map.off("popupclose", clearFocusedPhoto)
+    }
+  }, [clearFocusedPhoto, map])
+
+  useEffect(() => {
+    if (map) {
+      const openPopup = e => {
         var coordinates = e.features[0].geometry.coordinates.slice()
 
         // Ensure that if the map is zoomed out such that multiple
@@ -75,24 +84,23 @@ function Map({
         }
 
         setFocusedPhotoIdAction(e.features[0].properties.id)
-      })
-      map.on("popupclose", clearFocusedPhoto)
-
-      setMapLoaded(true)
-    })
-  }, [])
+      }
+      map.on("click", PHOTOS, openPopup)
+      return () => map.off("click", PHOTOS, openPopup)
+    }
+  }, [map, setFocusedPhotoIdAction])
 
   useEffect(() => {
-    if (mapLoaded) {
-      mapRef.current.getSource(PHOTOS).setData(geoJsonData)
+    if (map) {
+      map.getSource(PHOTOS).setData(geoJsonData)
     }
-  }, [geoJsonData, mapLoaded])
+  }, [geoJsonData, map])
 
   return html`
     <div className="absolute inset-0" ref=${initMap}>
-      ${mapLoaded &&
+      ${map &&
         html`
-          <${MapMarker} map=${mapRef.current} photos=${photos} />
+          <${MapMarker} map=${map} photos=${photos} />
         `}
     </div>
   `

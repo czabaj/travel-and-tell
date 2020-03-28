@@ -35,7 +35,7 @@ function Marker({ map, focusedPhoto }) {
         .setDOMContent(content)
         .addTo(map)
     }
-  }, [focusedPhoto])
+  }, [content, focusedPhoto, map])
 
   return focusedPhoto
     ? createPortal(
