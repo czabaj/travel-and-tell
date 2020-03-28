@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
 } from "/utils/h.js"
-import { createMap } from "/utils/map.js"
+import { createMap, mapCenterFromPhotos } from "/utils/map.js"
 import { photosByDateSelector, setFocusedPhotoId } from "/utils/store.js"
 import MapMarker from "./MapMarker.js"
 
@@ -26,6 +26,7 @@ const withMap = connect(
         photos,
       ),
     },
+    mapCenter: !R.isEmpty(photos) && mapCenterFromPhotos(photos),
     photos,
   })),
   {
@@ -37,6 +38,7 @@ const withMap = connect(
 function Map({
   clearFocusedPhoto,
   geoJsonData,
+  mapCenter,
   photos,
   setFocusedPhotoIdAction,
 }) {
@@ -92,9 +94,16 @@ function Map({
 
   useEffect(() => {
     if (map) {
+      console.log("geoJsonData", geoJsonData)
       map.getSource(PHOTOS).setData(geoJsonData)
     }
   }, [geoJsonData, map])
+
+  useEffect(() => {
+    if (map && mapCenter) {
+      map.jumpTo(mapCenter)
+    }
+  }, [map, mapCenter])
 
   return html`
     <div className="absolute inset-0" ref=${initMap}>
