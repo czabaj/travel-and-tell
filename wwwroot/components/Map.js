@@ -18,9 +18,9 @@ const withMap = connect(
     geoJsonData: {
       type: "FeatureCollection",
       features: R.map(
-        ({ id, coordinates }) => ({
+        ({ icon, id, coordinates }) => ({
           type: "Feature",
-          properties: { id, icon: "music" },
+          properties: { icon: icon || "marker", id },
           geometry: { type: "Point", coordinates },
         }),
         photos,

@@ -10,15 +10,15 @@ const config = localforage.config({
 
 /**
  *  Shape of StoredPhoto
- *  @version 2.0.0
+ *  @version 2.0.1
  *  @see SchemaVer https://github.com/snowplow/iglu/wiki/SchemaVer
- *  @typedef {
- *    blob: Blob,
- *    coordinates: [number, number],
- *    datetime: string,
- *    filename: string,
- *    id: string
- *  } StoredPhoto
+ *  @typedef {object} StoredPhoto
+ *  @property {Blob} blob with image data
+ *  @property {[number, number]} GPS coordinates as [longtitude, latitude]
+ *  @property {string} datetime of capture as ISO-8601 simplified extended (YYYY-MM-DDTHH:mm:ss.sssZ)
+ *  @property {string} filename of source file
+ *  @property {string} icon name from Maki icon set @see https://labs.mapbox.com/maki-icons/
+ *  @property {string} id
  */
 
 /**
