@@ -7,21 +7,34 @@ import {
   useState,
   useEffect,
 } from "/utils/h.js"
-import { createMap, mapCenterFromPhotos } from "/utils/map.js"
+import { addHillshading, createMap, mapCenterFromPhotos } from "/utils/map.js"
 import { photosByDateSelector, setFocusedPhotoId } from "/utils/store.js"
 import MapMarker from "./MapMarker.js"
 
-const PHOTOS = "photos"
+const LAYER_PHOTOS_LINE = "layerPhotosLine"
+const LAYER_PHOTOS_POINTS = "layerPhotosPoints"
 
 const withMap = connect(
   createSelector(photosByDateSelector, photos => ({
-    geoJsonData: {
+    geoJsonLine: {
+      type: "FeatureCollection",
+      features: [
+        {
+          geometry: {
+            type: "LineString",
+            coordinates: R.map(R.prop("coordinates"), photos),
+          },
+          type: "Feature",
+        },
+      ],
+    },
+    geoJsonPoints: {
       type: "FeatureCollection",
       features: R.map(
         ({ icon, id, coordinates }) => ({
-          type: "Feature",
-          properties: { icon: icon || "marker", id },
           geometry: { type: "Point", coordinates },
+          properties: { icon: icon || "marker", id },
+          type: "Feature",
         }),
         photos,
       ),
@@ -37,7 +50,8 @@ const withMap = connect(
 
 function Map({
   clearFocusedPhoto,
-  geoJsonData,
+  geoJsonLine,
+  geoJsonPoints,
   mapCenter,
   photos,
   setFocusedPhotoIdAction,
@@ -50,11 +64,35 @@ function Map({
       // nust trigger resize otherwise map canvas don't expand
       mapInstance.resize()
 
-      mapInstance.addSource(PHOTOS, { type: "geojson", data: geoJsonData })
+      addHillshading(mapInstance)
+
+      mapInstance.addSource(LAYER_PHOTOS_LINE, {
+        type: "geojson",
+        data: geoJsonLine,
+      })
       mapInstance.addLayer({
-        id: PHOTOS,
+        id: LAYER_PHOTOS_LINE,
+        type: "line",
+        source: LAYER_PHOTOS_LINE,
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+        paint: {
+          "line-color": "#ed6498",
+          "line-width": 5,
+          "line-opacity": 0.8,
+        },
+      })
+
+      mapInstance.addSource(LAYER_PHOTOS_POINTS, {
+        type: "geojson",
+        data: geoJsonPoints,
+      })
+      mapInstance.addLayer({
+        id: LAYER_PHOTOS_POINTS,
         type: "symbol",
-        source: PHOTOS,
+        source: LAYER_PHOTOS_POINTS,
         layout: {
           "icon-image": "{icon}-15",
           "icon-allow-overlap": true,
@@ -68,36 +106,24 @@ function Map({
 
   useEffect(() => {
     if (map) {
-      map.on("popupclose", clearFocusedPhoto)
-      return () => map.off("popupclose", clearFocusedPhoto)
-    }
-  }, [clearFocusedPhoto, map])
-
-  useEffect(() => {
-    if (map) {
       const openPopup = e => {
-        var coordinates = e.features[0].geometry.coordinates.slice()
-
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360
-        }
-
         setFocusedPhotoIdAction(e.features[0].properties.id)
       }
-      map.on("click", PHOTOS, openPopup)
-      return () => map.off("click", PHOTOS, openPopup)
+      map.on("click", LAYER_PHOTOS_POINTS, openPopup)
+      map.on("popupclose", LAYER_PHOTOS_POINTS, clearFocusedPhoto)
+      return () => {
+        map.off("click", LAYER_PHOTOS_POINTS, openPopup)
+        map.off("popupclose", LAYER_PHOTOS_POINTS, clearFocusedPhoto)
+      }
     }
-  }, [map, setFocusedPhotoIdAction])
+  }, [clearFocusedPhoto, map, setFocusedPhotoIdAction])
 
   useEffect(() => {
     if (map) {
-      console.log("geoJsonData", geoJsonData)
-      map.getSource(PHOTOS).setData(geoJsonData)
+      map.getSource(LAYER_PHOTOS_LINE).setData(geoJsonLine)
+      map.getSource(LAYER_PHOTOS_POINTS).setData(geoJsonPoints)
     }
-  }, [geoJsonData, map])
+  }, [geoJsonLine, geoJsonPoints, map])
 
   useEffect(() => {
     if (map && mapCenter) {

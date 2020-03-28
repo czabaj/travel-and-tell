@@ -1,16 +1,35 @@
 import * as R from "/web_modules/ramda.js"
 
-const accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
+mapboxgl.accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
-export const createMap = node => {
-  mapboxgl.accessToken = accessToken
-  return new mapboxgl.Map({
+export const createMap = node =>
+  new mapboxgl.Map({
     container: node,
-    style: "mapbox://styles/mapbox/streets-v11",
+    style: "mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g",
   })
+
+/**
+ * @see https://docs.mapbox.com/mapbox-gl-js/example/hillshade/
+ */
+export const addHillshading = map => {
+  map.addSource("dem", {
+    type: "raster-dem",
+    url: "mapbox://mapbox.terrain-rgb",
+  })
+  map.addLayer(
+    {
+      id: "hillshading",
+      source: "dem",
+      type: "hillshade",
+      // insert below waterway-river-canal-shadow;
+      // where hillshading sits in the Mapbox Outdoors style
+    },
+    "waterway-river-canal-shadow",
+  )
 }
 
 const maxMin = R.apply(R.juxt([Math.max, Math.min]))
+const ZOOM_OUT_DEGREE = 1
 /**
  * Given photos object, returns mapbox CameraOptions
  * @param {import("/utils/storage.js").StoredPhoto[]} photos
@@ -33,7 +52,7 @@ export const mapCenterFromPhotos = R.pipe(
 
     return {
       center: R.map(R.mean, [longMaxMin, latMaxMin]),
-      zoom: -Math.log2((maxDistance + 0.7) / 360),
+      zoom: -Math.log2((maxDistance + ZOOM_OUT_DEGREE) / 360),
     }
   },
 )
