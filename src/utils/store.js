@@ -1,8 +1,6 @@
-import * as R from "/web_modules/ramda.js"
-import { isFunction } from "/web_modules/ramda-adjunct.js"
-
-export { pipe } from "/web_modules/ramda.js"
-import { createSelector } from "/web_modules/reselect.js"
+import * as R from "ramda"
+import { isFunction } from "ramda-adjunct"
+import { createSelector } from "reselect"
 
 /**
  * Enhances unistore store that:

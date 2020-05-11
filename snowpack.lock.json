@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "ramda": "https://cdn.pika.dev/pin/ramda@v0.27.0-Vul0x7CfyGetwEhFYiWB/ramda.js",
+    "ramda-adjunct": "https://cdn.pika.dev/pin/ramda-adjunct@v2.26.0-C65VKVwEVdYhaQOYMlwn/ramda-adjunct.js",
+    "reselect": "https://cdn.pika.dev/pin/reselect@v4.0.0-ml8DDuthE0ZLBspjRIbe/reselect.js"
+  }
+}

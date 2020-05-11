@@ -1,4 +1,4 @@
-import dayjs from "/web_modules/dayjs.js"
+import dayjs from "dayjs"
 
 /**
  * Converts File object containing image into Storage object.

@@ -1,55 +1,34 @@
 {
   "dependencies": {
-    "csz": "^1.2.0",
     "dayjs": "^1.8.20",
-    "htm": "^3.0.3",
-    "preact": "^10.3.1",
-    "ramda": "^0.27.0",
-    "ramda-adjunct": "^2.25.0",
-    "reselect": "^4.0.0",
     "unistore": "^3.5.1"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.6",
+    "@snowpack/app-scripts-preact": "^0.4.0",
+    "@testing-library/jest-dom": "^5.5.0",
+    "@testing-library/preact": "^1.0.2",
     "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.19.0",
+    "eslint-config-preact": "^1.1.1",
     "eslint-plugin-react-hooks": "^3.0.0",
+    "jest": "^25.4.0",
     "postcss-cli": "^7.1.0",
+    "preact": "^10.4.1",
     "prettier": "1.19.1",
-    "snowpack": "^1.2.0",
+    "snowpack": "^2.0.0-0",
     "tailwindcss": "^1.2.0"
   },
-  "license": "MIT",
-  "name": "travel-and-tell",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vaclavnovotny/travel-and-tell.git"
+  "webDependencies": {
+    "ramda": "^0.27.0",
+    "ramda-adjunct": "^2.25.0",
+    "reselect": "^4.0.0"
   },
   "scripts": {
-    "build": "NODE_ENV=production snowpack --dest wwwroot/web_modules --optimize && yarn build:css -m",
-    "build:css": "postcss index.css -o wwwroot/index.css",
-    "dev": "concurrently \"yarn build:css -w\" \"npx servor --reload wwwroot\"",
-    "open-chrome": "google-chrome --remote-debugging-port=9222",
-    "prepare": "snowpack --dest wwwroot/web_modules",
-    "prettier": "prettier \"**/*.+(js|jsx|yml|yaml|css|less|scss|ts|tsx|md|graphql|mdx)\""
-  },
-  "snowpack": {
-    "webDependencies": [
-      "csz",
-      "dayjs",
-      "dayjs/esm/plugin/customParseFormat/index.js",
-      "dayjs/esm/plugin/localizedFormat/index.js",
-      "htm",
-      "preact",
-      "preact/compat",
-      "preact/debug",
-      "preact/hooks",
-      "ramda",
-      "ramda-adjunct",
-      "reselect",
-      "unistore/full/preact.es.js"
-    ]
-  },
-  "version": "1.0.0"
+    "build": "snowpack build",
+    "build:css": "postcss src/index.css -o public/index.css",
+    "dev": "concurrently \"yarn build:css -w\" \"snowpack dev\"",
+    "prepare": "snowpack",
+    "test": "jest"
+  }
 }

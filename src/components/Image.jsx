@@ -1,4 +1,6 @@
-import { html, useEffect, useMemo } from "/utils/h.js"
+import { h } from "preact"
+
+import { useEffect, useMemo } from "../utils/h.js"
 
 const urlCreator = window.URL || window.webkitURL
 
@@ -8,9 +10,7 @@ function Image({ blob }) {
     urlCreator.revokeObjectURL(dataUrl)
   }, [dataUrl])
 
-  return html`
-    <img src=${dataUrl} />
-  `
+  return <img src={dataUrl} />
 }
 
 export default Image

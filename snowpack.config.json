@@ -1,0 +1,10 @@
+{
+  "extends": "@snowpack/app-scripts-preact",
+  "devOptions": {},
+  "installOptions": {},
+  "knownEntrypoints": [
+    "dayjs/esm/plugin/customParseFormat/index.js",
+    "dayjs/esm/plugin/localizedFormat/index.js",
+    "unistore/full/preact.es.js"
+  ]
+}

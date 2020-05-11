@@ -1,13 +1,14 @@
-import * as R from "/web_modules/ramda.js"
+import { h } from "preact"
+import * as R from "ramda"
+
 import {
-  html,
   useCallback,
   useEffect,
   useReducer,
   useRef,
   useState,
-} from "/utils/h.js"
-import { clickOn, preventDefault } from "/utils/misc.js"
+} from "../utils/h.js"
+import { clickOn, preventDefault } from "../utils/misc.js"
 
 const createFileInput = (accept, multiple, onChange) => {
   const input = document.createElement("input")
@@ -74,18 +75,18 @@ function FileInput({
 
   const content = children({ draggedOver, openFileDialog, value })
 
-  return droppable && !disabled && !readOnly
-    ? html`
-        <div
-          onDragEnter=${handleDragEvents}
-          onDragLeave=${handleDragEvents}
-          onDragOver=${handleDragEvents}
-          onDrop=${handleDragEvents}
-        >
-          ${content}
-        </div>
-      `
-    : content
+  return droppable && !disabled && !readOnly ? (
+    <div
+      onDragEnter={handleDragEvents}
+      onDragLeave={handleDragEvents}
+      onDragOver={handleDragEvents}
+      onDrop={handleDragEvents}
+    >
+      {content}
+    </div>
+  ) : (
+    content
+  )
 }
 
 export default FileInput

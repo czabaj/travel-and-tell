@@ -1,16 +1,15 @@
-import { createPortal } from "/web_modules/preact/compat.js"
-import * as R from "/web_modules/ramda.js"
+import { h } from "preact"
+import * as R from "ramda"
 
-import Image from "/components/Image.js"
+import Image from "./Image"
 import {
-  Fragment,
+  createPortal,
   connect,
   createSelector,
-  html,
   useEffect,
   useMemo,
-} from "/utils/h.js"
-import { focusedPhotoIdSelector } from "/utils/store.js"
+} from "../utils/h.js"
+import { focusedPhotoIdSelector } from "../utils/store.js"
 
 const photosSelector = (_, { photos }) => photos
 
@@ -39,11 +38,9 @@ function Marker({ map, focusedPhoto }) {
 
   return focusedPhoto
     ? createPortal(
-        html`
-          <${Fragment}>
-            <${Image} blob=${focusedPhoto.blob} />
-          <//>
-        `,
+        <>
+          <Image blob={focusedPhoto.blob} />
+        </>,
         content,
       )
     : null

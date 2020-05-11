@@ -1,4 +1,4 @@
-import * as R from "/web_modules/ramda.js"
+import * as R from "ramda"
 import {
   isArray,
   isNonEmptyString,
@@ -6,7 +6,7 @@ import {
   isString,
   noop,
   omitBy,
-} from "/web_modules/ramda-adjunct.js"
+} from "ramda-adjunct"
 
 const whenNotEmpty = fn => R.ifElse(R.isEmpty, noop, fn)
 const keysOfTruthyValues = R.pipe(omitBy(R.complement(Boolean)), R.keys)

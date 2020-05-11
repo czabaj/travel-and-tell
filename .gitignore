@@ -1,7 +1,7 @@
 # automatically generated files
 /node_modules/
-/wwwroot/web_modules/
-/wwwroot/index.css
+/web_modules/
+/public/index.css
 
 # log files
 *error.log

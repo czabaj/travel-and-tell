@@ -15,14 +15,16 @@ export default function unistoreDevTools(store) {
 
   if (!store.devtools) {
     store.devtools = extension.connect()
-    store.devtools.subscribe(function(message) {
-      if (message.type === "DISPATCH" && message.state) {
-        ignoreState =
-          message.payload.type === "JUMP_TO_ACTION" ||
-          message.payload.type === "JUMP_TO_STATE"
-        store.setState(JSON.parse(message.state), true)
-      }
-    })
+
+    store.devtools.subscribe &&
+      store.devtools.subscribe(function(message) {
+        if (message.type === "DISPATCH" && message.state) {
+          ignoreState =
+            message.payload.type === "JUMP_TO_ACTION" ||
+            message.payload.type === "JUMP_TO_STATE"
+          store.setState(JSON.parse(message.state), true)
+        }
+      })
     store.devtools.init(store.getState())
     store.subscribe(function(state, action) {
       var actionName = (action && action.name) || "setState"

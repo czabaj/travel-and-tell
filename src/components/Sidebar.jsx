@@ -1,26 +1,25 @@
-import dayjs from "/web_modules/dayjs.js"
-import { isEmpty } from "/web_modules/ramda.js"
+import dayjs from "dayjs"
+import { h } from "preact"
+import { isEmpty, pipe } from "ramda"
 
-import Button from "/components/Button.js"
-import FileInput from "/components/FileInput.js"
+import Button from "./Button"
+import FileInput from "./FileInput"
 import {
   connect,
   createStructuredSelector,
-  html,
   useCallback,
   useReducer,
-} from "/utils/h.js"
-import { fileToStoredPhoto } from "/utils/file.js"
-import { clearPhotosStorage, persistPhoto } from "/utils/storage.js"
+} from "../utils/h.js"
+import { fileToStoredPhoto } from "../utils/file.js"
+import { clearPhotosStorage, persistPhoto } from "../utils/storage.js"
 import {
   appendPhotos,
   clearPhotos,
   photosByDateSelector,
-  pipe,
   setFocusedPhotoId,
   setStorageLoading,
   storageLoadingSelector,
-} from "/utils/store.js"
+} from "../utils/store.js"
 
 const withSidebar = connect(
   createStructuredSelector({
@@ -89,58 +88,50 @@ function Sidebar({ addPhoto, clearPhotos, focusPhoto, photos }) {
     [allSelected, photos],
   )
 
-  return html`
-    <${FileInput} droppable multiple onChange=${addPhoto} values=${photos}>
-      ${({ draggedOver, openFileDialog }) =>
-        html`
-          <div className="bg-indigo-300 flex flex-col min-h-screen px-4 py-2">
-            <div className="flex">
-              <input
-                name="photos_all"
-                onChange=${toggleSelectAll}
-                type="checkbox"
-                checked=${allSelected}
-              />
+  return (
+    <FileInput droppable multiple onChange={addPhoto} values={photos}>
+      {({ draggedOver, openFileDialog }) => (
+        <div className="bg-indigo-300 flex flex-col min-h-screen px-4 py-2">
+          <div className="flex">
+            <input
+              name="photos_all"
+              onChange={toggleSelectAll}
+              type="checkbox"
+              checked={allSelected}
+            />
 
-              <${Button} indigo onClick=${openFileDialog}>
-                Add images
-              <//>
-              <${Button}
-                disabled=${isEmpty(selection)}
-                indigo
-                onClick=${clearPhotos}
-              >
-                Clear
-              <//>
-            </div>
-
-            <div className="flex-1">
-              ${photos.map(
-                ({ datetime, filename, id }) =>
-                  html`
-                    <div className="flex">
-                      <input
-                        data-id=${id}
-                        name=${`photos_${id}`}
-                        onChange=${dispatchSelect}
-                        type="checkbox"
-                        checked=${Boolean(selection[id])}
-                      />
-                      <div
-                        className="flex-1 hover:cursor-pointer"
-                        data-id=${id}
-                        onClick=${focusPhoto}
-                      >
-                        ${filename} ${dayjs(datetime).format("L")}
-                      </div>
-                    </div>
-                  `,
-              )}
-            </div>
+            <Button indigo onClick={openFileDialog}>
+              Add images
+            </Button>
+            <Button disabled={isEmpty(selection)} indigo onClick={clearPhotos}>
+              Clear
+            </Button>
           </div>
-        `}
-    <//>
-  `
+
+          <div className="flex-1">
+            {photos.map(({ datetime, filename, id }) => (
+              <div className="flex">
+                <input
+                  data-id={id}
+                  name={`photos_${id}`}
+                  onChange={dispatchSelect}
+                  type="checkbox"
+                  checked={Boolean(selection[id])}
+                />
+                <div
+                  className="flex-1 hover:cursor-pointer"
+                  data-id={id}
+                  onClick={focusPhoto}
+                >
+                  {filename} {dayjs(datetime).format("L")}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </FileInput>
+  )
 }
 
 export default withSidebar(Sidebar)

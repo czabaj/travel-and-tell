@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-
 <html lang="en">
-  <title>Travel and tell</title>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta
-    name="viewport"
-    content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    name="description"
+    content="Web site created using create-snowpack-app"
   />
+  <title>Snowpack App</title>
   <!-- mapbox dependencies -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"></script>
   <link
     href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css"
     rel="stylesheet"
   />
-  <link href="/index.css" rel="stylesheet" type="text/css" />
+  <!-- generated styles -->
+  <link href="index.css" rel="stylesheet" />
 
   <body class="bg-gray-100">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
     <!-- external libraries -->
     <script src="https://unpkg.com/localforage@1.7.3/dist/localforage.js"></script>
     <script src="https://unpkg.com/blueimp-load-image@2.26.0/js/load-image.all.min.js"></script>
     <script src="https://unpkg.com/blueimp-canvas-to-blob@3.17.0/js/canvas-to-blob.min.js"></script>
     <!-- application entry point -->
-    <script src="/app.js" type="module"></script>
+    <script type="module" src="/_dist_/index.js"></script>
   </body>
 </html>

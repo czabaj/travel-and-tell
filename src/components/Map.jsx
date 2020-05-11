@@ -1,15 +1,16 @@
-import * as R from "/web_modules/ramda.js"
+import { h } from "preact"
+import * as R from "ramda"
+
 import {
   connect,
   createSelector,
-  html,
   useCallback,
   useState,
   useEffect,
-} from "/utils/h.js"
-import { addHillshading, createMap, mapCenterFromPhotos } from "/utils/map.js"
-import { photosByDateSelector, setFocusedPhotoId } from "/utils/store.js"
-import MapMarker from "./MapMarker.js"
+} from "../utils/h.js"
+import { addHillshading, createMap, mapCenterFromPhotos } from "../utils/map.js"
+import { photosByDateSelector, setFocusedPhotoId } from "../utils/store.js"
+import MapMarker from "./MapMarker.jsx"
 
 const LAYER_PHOTOS_LINE = "layerPhotosLine"
 const LAYER_PHOTOS_POINTS = "layerPhotosPoints"
@@ -131,14 +132,11 @@ function Map({
     }
   }, [map, mapCenter])
 
-  return html`
-    <div className="absolute inset-0" ref=${initMap}>
-      ${map &&
-        html`
-          <${MapMarker} map=${map} photos=${photos} />
-        `}
+  return (
+    <div className="absolute inset-0" ref={initMap}>
+      {map && <MapMarker map={map} photos={photos} />}
     </div>
-  `
+  )
 }
 
 export default withMap(Map)

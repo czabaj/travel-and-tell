@@ -1,4 +1,4 @@
-import * as R from "/web_modules/ramda.js"
+import * as R from "ramda"
 
 mapboxgl.accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
