@@ -4,6 +4,6 @@ website:
   component: "@serverless/website"
   inputs:
     code:
-      src: public
+      src: build
       hook: yarn build
     domain: www.travelandtell.net

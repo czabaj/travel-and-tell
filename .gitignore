@@ -1,7 +1,8 @@
 # automatically generated files
+/build/
 /node_modules/
-/web_modules/
 /public/index.css
+/web_modules/
 
 # log files
 *error.log
