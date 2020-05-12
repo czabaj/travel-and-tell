@@ -16,7 +16,7 @@ import { appendPhotos, enhanceStore, setStorageLoading } from "./utils/store.js"
 function App() {
   const initialState = pipe(appendPhotos([]), setStorageLoading(true))({})
   const store = compose(
-    // connectToDevTools,
+    connectToDevTools,
     enhanceStore,
     createStore,
   )(initialState)

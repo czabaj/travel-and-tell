@@ -1,9 +1,9 @@
-import dayjs from "dayjs"
 import { h } from "preact"
 import { isEmpty, pipe } from "ramda"
 
 import Button from "./Button"
 import FileInput from "./FileInput"
+import SidebarItem from "./SidebarItem"
 import {
   connect,
   createStructuredSelector,
@@ -91,8 +91,8 @@ function Sidebar({ addPhoto, clearPhotos, focusPhoto, photos }) {
   return (
     <FileInput droppable multiple onChange={addPhoto} values={photos}>
       {({ draggedOver, openFileDialog }) => (
-        <div className="bg-indigo-300 flex flex-col min-h-screen px-4 py-2">
-          <div className="flex">
+        <div className="bg-indigo-300 flex flex-col min-h-screen">
+          <div className="flex items-center jus px-3 py-2 space-x-3">
             <input
               name="photos_all"
               onChange={toggleSelectAll}
@@ -109,23 +109,13 @@ function Sidebar({ addPhoto, clearPhotos, focusPhoto, photos }) {
           </div>
 
           <div className="flex-1">
-            {photos.map(({ datetime, filename, id }) => (
-              <div className="flex">
-                <input
-                  data-id={id}
-                  name={`photos_${id}`}
-                  onChange={dispatchSelect}
-                  type="checkbox"
-                  checked={Boolean(selection[id])}
-                />
-                <div
-                  className="flex-1 hover:cursor-pointer"
-                  data-id={id}
-                  onClick={focusPhoto}
-                >
-                  {filename} {dayjs(datetime).format("L")}
-                </div>
-              </div>
+            {photos.map(photo => (
+              <SidebarItem
+                dispatchSelect={dispatchSelect}
+                focusPhoto={focusPhoto}
+                photo={photo}
+                selection={selection}
+              />
             ))}
           </div>
         </div>

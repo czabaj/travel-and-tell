@@ -1,5 +1,6 @@
 export function preventDefault(event) {
   event.preventDefault()
+  return event
 }
 
 export function clickOn(domNode) {
