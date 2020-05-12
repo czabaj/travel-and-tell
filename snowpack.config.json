@@ -5,6 +5,7 @@
   "knownEntrypoints": [
     "dayjs/esm/plugin/customParseFormat/index.js",
     "dayjs/esm/plugin/localizedFormat/index.js",
+    "unistore/devtools.js",
     "unistore/full/preact.es.js"
   ]
 }

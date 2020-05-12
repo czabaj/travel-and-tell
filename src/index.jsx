@@ -1,8 +1,8 @@
 import "preact/debug"
-import { pipe } from "ramda"
+import { compose, pipe } from "ramda"
 // https://www.npmjs.com/package/unistore
 import { Provider, createStore } from "unistore/full/preact.es.js"
-import unistoreDevTools from "./utils/unistore.devtools.js"
+import connectToDevTools from "unistore/devtools.js"
 
 import { h, render } from "preact"
 
@@ -15,8 +15,11 @@ import { appendPhotos, enhanceStore, setStorageLoading } from "./utils/store.js"
 
 function App() {
   const initialState = pipe(appendPhotos([]), setStorageLoading(true))({})
-  const store = enhanceStore(createStore(initialState))
-  unistoreDevTools(store)
+  const store = compose(
+    // connectToDevTools,
+    enhanceStore,
+    createStore,
+  )(initialState)
 
   getStoredPhotos().then(photos =>
     store.setState(pipe(appendPhotos(photos), setStorageLoading(false))),
