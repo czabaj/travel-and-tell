@@ -6,12 +6,13 @@ import connectToDevTools from "unistore/devtools.js"
 
 import { h, render } from "preact"
 
-import Layout from "./components/Layout.jsx"
-import Map from "./components/Map.jsx"
-import Panel from "./components/Panel.jsx"
-import Sidebar from "./components/Sidebar.jsx"
-import { getStoredPhotos } from "./utils/storage.js"
-import { appendPhotos, enhanceStore, setStorageLoading } from "./utils/store.js"
+import Hotkeys from "./components/Hotkeys"
+import Layout from "./components/Layout"
+import Map from "./components/Map"
+import Panel from "./components/Panel"
+import Sidebar from "./components/Sidebar"
+import { getStoredPhotos } from "./utils/storage"
+import { appendPhotos, enhanceStore, setStorageLoading } from "./utils/store"
 
 function App() {
   const initialState = pipe(appendPhotos([]), setStorageLoading(true))({})
@@ -28,6 +29,7 @@ function App() {
   return (
     <Provider store={store}>
       <Layout panel={<Panel />} sidebar={<Sidebar />}>
+        <Hotkeys />
         <Map />
       </Layout>
     </Provider>

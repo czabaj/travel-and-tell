@@ -59,3 +59,18 @@ export const setStorageLoading = R.curry((loadingState, state) =>
   R.set(storageLoading, Boolean(loadingState), state),
 )
 export const clearPhotos = R.set(photos, [])
+
+export const updateFocusedPhotoIndex = updateIndex => state => {
+  const focusedPhotoId = focusedPhotoIdSelector(state)
+  if (focusedPhotoId) {
+    const photosByDate = photosByDateSelector(state)
+    const focusedPhotoIdx = photosByDate.findIndex(
+      R.propEq("id", focusedPhotoId),
+    )
+    const nextPhotoByDate = photosByDate[updateIndex(focusedPhotoIdx)]
+    if (nextPhotoByDate) {
+      return setFocusedPhotoId(nextPhotoByDate.id, state)
+    }
+  }
+  return state
+}

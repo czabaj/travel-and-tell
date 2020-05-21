@@ -1,6 +1,4 @@
-import { h } from "preact"
-
-import { cn } from "../utils/css.js"
+import { cn, h } from "../utils/h"
 
 function Button({ disabled, to, ...other }) {
   const className = cn(

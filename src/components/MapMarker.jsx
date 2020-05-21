@@ -10,7 +10,7 @@ import {
   useEffect,
   useMemo,
 } from "../utils/h.js"
-import { focusedPhotoIdSelector, setFocusedPhotoId } from "../utils/store.js"
+import { focusedPhotoIdSelector, setFocusedPhotoId } from "../utils/store"
 
 const photosSelector = (_, { photos }) => photos
 
