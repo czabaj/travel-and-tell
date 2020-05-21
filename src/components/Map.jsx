@@ -44,8 +44,7 @@ const withMap = connect(
     photos,
   })),
   {
-    clearFocusedPhoto: setFocusedPhotoId(null),
-    setFocusedPhotoIdAction: R.flip(setFocusedPhotoId),
+    setFocusedPhoto: R.flip(setFocusedPhotoId),
   },
 )
 
@@ -55,7 +54,7 @@ function Map({
   geoJsonPoints,
   mapCenter,
   photos,
-  setFocusedPhotoIdAction,
+  setFocusedPhoto,
 }) {
   const [map, setMap] = useState(null)
 
@@ -108,16 +107,14 @@ function Map({
   useEffect(() => {
     if (map) {
       const openPopup = e => {
-        setFocusedPhotoIdAction(e.features[0].properties.id)
+        setFocusedPhoto(e.features[0].properties.id)
       }
       map.on("click", LAYER_PHOTOS_POINTS, openPopup)
-      map.on("popupclose", LAYER_PHOTOS_POINTS, clearFocusedPhoto)
       return () => {
         map.off("click", LAYER_PHOTOS_POINTS, openPopup)
-        map.off("popupclose", LAYER_PHOTOS_POINTS, clearFocusedPhoto)
       }
     }
-  }, [clearFocusedPhoto, map, setFocusedPhotoIdAction])
+  }, [clearFocusedPhoto, map, setFocusedPhoto])
 
   useEffect(() => {
     if (map) {

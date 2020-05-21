@@ -1,4 +1,3 @@
-import { h } from "preact"
 import { isEmpty, pipe } from "ramda"
 
 import Button from "./Button"
@@ -7,6 +6,7 @@ import SidebarItem from "./SidebarItem"
 import {
   connect,
   createStructuredSelector,
+  h,
   useCallback,
   useReducer,
 } from "../utils/h.js"
@@ -15,6 +15,7 @@ import { clearPhotosStorage, persistPhoto } from "../utils/storage.js"
 import {
   appendPhotos,
   clearPhotos,
+  focusedPhotoIdSelector,
   photosByDateSelector,
   setFocusedPhotoId,
   setStorageLoading,
@@ -23,6 +24,7 @@ import {
 
 const withSidebar = connect(
   createStructuredSelector({
+    focusedPhotoId: focusedPhotoIdSelector,
     photos: photosByDateSelector,
     storageLoading: storageLoadingSelector,
   }),
@@ -45,18 +47,12 @@ const withSidebar = connect(
       await clearPhotosStorage()
       store.setState(pipe(clearPhotos, setStorageLoading(false)))
     },
-    focusPhoto: (
-      state,
-      {
-        target: {
-          dataset: { id },
-        },
-      },
-    ) => setFocusedPhotoId(id, state),
+    focusPhoto: (state, event) =>
+      setFocusedPhotoId(event.currentTarget.dataset.id, state),
   }),
 )
 
-function selectionReduced(selection, event) {
+function selectionReducer(selection, event) {
   switch (event.type) {
     case "change": {
       const {
@@ -76,52 +72,61 @@ function selectionReduced(selection, event) {
   }
 }
 
-function Sidebar({ addPhoto, clearPhotos, focusPhoto, photos }) {
-  const [selection, dispatchSelect] = useReducer(selectionReduced, {})
-  const allSelected =
-    !isEmpty(photos) && photos.every(({ id }) => selection[id])
-  const toggleSelectAll = useCallback(
-    () =>
-      dispatchSelect(
-        allSelected ? { type: "deselectAll" } : { type: "selectAll", photos },
-      ),
-    [allSelected, photos],
-  )
+const Sidebar = withSidebar(
+  ({ addPhoto, clearPhotos, focusedPhotoId, focusPhoto, photos }) => {
+    const [selection, dispatchSelect] = useReducer(selectionReducer, {})
+    const allSelected =
+      !isEmpty(photos) && photos.every(({ id }) => selection[id])
+    const toggleSelectAll = useCallback(
+      () =>
+        dispatchSelect(
+          allSelected ? { type: "deselectAll" } : { type: "selectAll", photos },
+        ),
+      [allSelected, photos],
+    )
 
-  return (
-    <FileInput droppable multiple onChange={addPhoto} values={photos}>
-      {({ draggedOver, openFileDialog }) => (
-        <div className="bg-indigo-300 flex flex-col min-h-screen">
-          <div className="flex items-center jus px-3 py-2 space-x-3">
-            <input
-              name="photos_all"
-              onChange={toggleSelectAll}
-              type="checkbox"
-              checked={allSelected}
-            />
-
-            <Button indigo onClick={openFileDialog}>
-              Add images
-            </Button>
-            <Button disabled={isEmpty(selection)} indigo onClick={clearPhotos}>
-              Clear
-            </Button>
-          </div>
-
-          <div className="flex-1">
-            {photos.map(photo => (
-              <SidebarItem
-                dispatchSelect={dispatchSelect}
-                focusPhoto={focusPhoto}
-                photo={photo}
-                selection={selection}
+    return (
+      <FileInput droppable multiple onChange={addPhoto} values={photos}>
+        {({ draggedOver, openFileDialog }) => (
+          <div className="bg-indigo-300 flex flex-col min-h-screen">
+            <div className="flex items-center jus px-3 py-2 space-x-3">
+              <input
+                name="photos_all"
+                onChange={toggleSelectAll}
+                type="checkbox"
+                checked={allSelected}
               />
-            ))}
-          </div>
-        </div>
-      )}
-    </FileInput>
-  )
-}
 
-export default withSidebar(Sidebar)
+              <Button indigo onClick={openFileDialog}>
+                Add images
+              </Button>
+              <Button
+                disabled={isEmpty(selection)}
+                indigo
+                onClick={clearPhotos}
+              >
+                Clear
+              </Button>
+            </div>
+
+            <div className="flex-1">
+              {photos.map(photo => (
+                <div data-id={photo.id} onClick={focusPhoto}>
+                  <SidebarItem
+                    active={photo.id === focusedPhotoId}
+                    dispatchSelect={dispatchSelect}
+                    focusPhoto={focusPhoto}
+                    photo={photo}
+                    selection={selection}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </FileInput>
+    )
+  },
+)
+
+export default Sidebar

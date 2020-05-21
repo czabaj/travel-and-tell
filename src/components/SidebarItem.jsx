@@ -1,15 +1,16 @@
 import dayjs from "dayjs"
 import { compose } from "ramda"
 
-import { h } from "../utils/h"
+import { cn, h } from "../utils/h"
 import { preventDefault } from "../utils/misc"
 
-function SidebarItem({ dispatchSelect, focusPhoto, photo, selection }) {
+function SidebarItem({ active, dispatchSelect, photo, selection }) {
   return (
     <div
-      className="flex items-center px-3 py-3 hover:bg-indigo-500"
-      data-id={photo.id}
-      onClick={focusPhoto}
+      className={cn(
+        "flex items-center px-3 py-3 hover:bg-indigo-500",
+        active && "bg-indigo-400",
+      )}
     >
       <input
         data-id={photo.id}

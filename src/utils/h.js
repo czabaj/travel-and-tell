@@ -6,11 +6,13 @@ import customParseFormat from "dayjs/esm/plugin/customParseFormat/index.js"
 import localizedFormat from "dayjs/esm/plugin/localizedFormat/index.js"
 // https://preactjs.com
 export { h } from "preact"
-export { createPortal, forwardRef, memo } from "preact/compat"
+export { Fragment, createPortal, forwardRef, memo } from "preact/compat"
 export * from "preact/hooks"
 export { createSelector, createStructuredSelector } from "reselect"
 // https://github.com/developit/unistore#readme
 export { connect } from "unistore/full/preact.es.js"
+
+export { cn } from "./css"
 
 dayjs.extend(customParseFormat)
 dayjs.extend(localizedFormat)

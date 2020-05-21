@@ -3,6 +3,7 @@ import * as R from "ramda"
 mapboxgl.accessToken = `pk.eyJ1IjoiZ3JvaGxpbmdyIiwiYSI6ImNrNndkemcwbjBhcTQzZXA3dXF1NHhzd20ifQ.F-h79-Hy4L81orYqieRyNA`
 
 export const createMap = node =>
+  // all options https://docs.mapbox.com/mapbox-gl-js/api/#map
   new mapboxgl.Map({
     container: node,
     style: "mapbox://styles/mapbox/cjaudgl840gn32rnrepcb9b9g",

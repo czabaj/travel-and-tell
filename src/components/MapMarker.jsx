@@ -1,15 +1,16 @@
-import { h } from "preact"
 import * as R from "ramda"
 
 import Image from "./Image"
 import {
+  Fragment,
   createPortal,
   connect,
   createSelector,
+  h,
   useEffect,
   useMemo,
 } from "../utils/h.js"
-import { focusedPhotoIdSelector } from "../utils/store.js"
+import { focusedPhotoIdSelector, setFocusedPhotoId } from "../utils/store.js"
 
 const photosSelector = (_, { photos }) => photos
 
@@ -22,9 +23,12 @@ const withMarker = connect(
         focusedPhotoId && R.find(R.whereEq({ id: focusedPhotoId }), photos),
     }),
   ),
+  {
+    clearFocusedPhoto: setFocusedPhotoId(null),
+  },
 )
 
-function Marker({ map, focusedPhoto }) {
+function Marker({ clearFocusedPhoto, map, focusedPhoto }) {
   const content = useMemo(() => document.createElement("div"), [])
 
   useEffect(() => {
@@ -33,14 +37,15 @@ function Marker({ map, focusedPhoto }) {
         .setLngLat(focusedPhoto.coordinates)
         .setDOMContent(content)
         .addTo(map)
+        .on("close", clearFocusedPhoto)
     }
-  }, [content, focusedPhoto, map])
+  }, [clearFocusedPhoto, content, focusedPhoto, map])
 
   return focusedPhoto
     ? createPortal(
-        <>
+        <Fragment>
           <Image blob={focusedPhoto.blob} />
-        </>,
+        </Fragment>,
         content,
       )
     : null
