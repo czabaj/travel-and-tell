@@ -1,15 +1,15 @@
 import * as R from "ramda"
-import {
-  isArray,
-  isNonEmptyString,
-  isObj,
-  isString,
-  noop,
-  omitBy,
-} from "ramda-adjunct"
 
-const whenNotEmpty = fn => R.ifElse(R.isEmpty, noop, fn)
-const keysOfTruthyValues = R.pipe(omitBy(R.complement(Boolean)), R.keys)
+const { isArray } = Array
+const isString = R.is(String)
+const isNonEmptyString = R.allPass([R.complement(R.isEmpty), isString])
+const isObj = R.is(Object)
+
+const whenNotEmpty = fn => R.unless(R.isEmpty, fn)
+const keysOfTruthyValues = obj =>
+  Object.entries(obj).reduce(
+    (acc, [key, value]) => (value && acc.push(key), acc),
+  )
 
 /**
  * classnames like utility

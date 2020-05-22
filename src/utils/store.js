@@ -1,6 +1,7 @@
 import * as R from "ramda"
-import { isFunction } from "ramda-adjunct"
 import { createSelector } from "reselect"
+
+const isFunction = R.is(Function)
 
 /**
  * Enhances unistore store that:

@@ -20,7 +20,6 @@
   },
   "webDependencies": {
     "ramda": "^0.27.0",
-    "ramda-adjunct": "^2.25.0",
     "reselect": "^4.0.0"
   },
   "scripts": {
